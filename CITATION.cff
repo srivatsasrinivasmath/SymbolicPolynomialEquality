@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+authors:
+-family-names: "Srinivas"
+ given-names: "Srivatsa"
+title: "Symbolic Polynomial Equality"
+version: 0.0.1
+url: "https://github.com/srivatsasrinivasmath/SymbolicPolynomialEquality"
