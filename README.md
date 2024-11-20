@@ -4,9 +4,7 @@ A more detailed proof and explanation will be uploaded sometime around Christmas
 
 The main function is `mkTest1` contained in the file Monomials.hs. `mkTest1` accepts a list of coefficients $[o_i]$ of length $o$ and tests whether there exists $m,n,[k_i]$ such that 
 
-$$
-x^n - 2x^m + 1 
-=
+$$x^n - 2x^m + 1 =
 (\sum_{i = 1}^o o_i x^{k_i})
 (\sum_{i = 1}^o o_{n-i} x^{k_i})
 $$
