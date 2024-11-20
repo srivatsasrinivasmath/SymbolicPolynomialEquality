@@ -190,7 +190,7 @@ test = runSMT . mkTest1
       q <- mkSymPoly "l" [1, -2, 1]
       let m = snd ((fst q) !! 1)
       let n = snd ((fst q) !! 2)
-      let ls = mkEqualTree [5 * n ./= 7 * m] (p `pMult` pCross p) (q `pMult` pCross q)
+      let ls = mkEqualTree [2 * n ./= 7 * m, 7 * m ./= 5 * n] (p `pMult` pCross p) (q `pMult` pCross q)
       let qu = do
             ls' <- ls
             let res_ls = ((T.findLeaf isSuccess) <$> ls')
