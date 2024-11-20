@@ -2,9 +2,9 @@ This is a haskell project that contains the main computations for a proof that t
 
 A more detailed proof and explanation will be uploaded sometime around Christmas, when I have some time to make it pretty. 
 
-The main function is `mkTest1` contained in the file Monomials.hs. `mkTest1` accepts a list of coefficients $[o_i]$ of length $o$ and tests whether there exists $m,n,[k_i]$ such that 
+The main function is `mkTest1` contained in the file Monomials.hs. `mkTest1` accepts a list of coefficients $[o_i]$ of length $l$ and tests whether there exists $m,n,[k_i]$ such that 
 
-$$x^n - 2x^m + 1 =
-(\sum_{i = 1}^o o_i x^{k_i})
-(\sum_{i = 1}^o o_{n-i} x^{k_i})
+$$(x^n - 2x^m + 1)(x^n - 2x^{n-m} + 1) =
+(\sum_{i = 1}^l o_i x^{k_i})
+(\sum_{i = 1}^l o_{l-i} x^{k_i})
 $$
