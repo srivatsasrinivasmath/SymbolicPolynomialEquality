@@ -47,10 +47,10 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 bindir     = "/home/vatsa/.cabal/bin"
-libdir     = "/home/vatsa/.cabal/lib/x86_64-linux-ghc-9.8.2/SymbolicPolynomialEquality-0.1.0.0-inplace"
-dynlibdir  = "/home/vatsa/.cabal/lib/x86_64-linux-ghc-9.8.2"
-datadir    = "/home/vatsa/.cabal/share/x86_64-linux-ghc-9.8.2/SymbolicPolynomialEquality-0.1.0.0"
-libexecdir = "/home/vatsa/.cabal/libexec/x86_64-linux-ghc-9.8.2/SymbolicPolynomialEquality-0.1.0.0"
+libdir     = "/home/vatsa/.cabal/lib/x86_64-linux-ghc-9.8.2-inplace/SymbolicPolynomialEquality-0.1.0.0-inplace"
+dynlibdir  = "/home/vatsa/.cabal/lib/x86_64-linux-ghc-9.8.2-inplace"
+datadir    = "/home/vatsa/.cabal/share/x86_64-linux-ghc-9.8.2-inplace/SymbolicPolynomialEquality-0.1.0.0"
+libexecdir = "/home/vatsa/.cabal/libexec/x86_64-linux-ghc-9.8.2-inplace/SymbolicPolynomialEquality-0.1.0.0"
 sysconfdir = "/home/vatsa/.cabal/etc"
 
 getBinDir     = catchIO (getEnv "SymbolicPolynomialEquality_bindir")     (\_ -> return bindir)

@@ -40,26 +40,26 @@
   (major1) == 0 && (major2) <  4 || \
   (major1) == 0 && (major2) == 4 && (minor) <= 3)
 #endif /* MIN_VERSION_monad_loops */
-/* package sbv-10.12 */
+/* package sbv-11.0 */
 #ifndef VERSION_sbv
-#define VERSION_sbv "10.12"
+#define VERSION_sbv "11.0"
 #endif /* VERSION_sbv */
 #ifndef MIN_VERSION_sbv
 #define MIN_VERSION_sbv(major1,major2,minor) (\
-  (major1) <  10 || \
-  (major1) == 10 && (major2) <  12 || \
-  (major1) == 10 && (major2) == 12 && (minor) <= 0)
+  (major1) <  11 || \
+  (major1) == 11 && (major2) <  0 || \
+  (major1) == 11 && (major2) == 0 && (minor) <= 0)
 #endif /* MIN_VERSION_sbv */
 
-/* tool gcc-13.2.0 */
+/* tool gcc-13.3.0 */
 #ifndef TOOL_VERSION_gcc
-#define TOOL_VERSION_gcc "13.2.0"
+#define TOOL_VERSION_gcc "13.3.0"
 #endif /* TOOL_VERSION_gcc */
 #ifndef MIN_TOOL_VERSION_gcc
 #define MIN_TOOL_VERSION_gcc(major1,major2,minor) (\
   (major1) <  13 || \
-  (major1) == 13 && (major2) <  2 || \
-  (major1) == 13 && (major2) == 2 && (minor) <= 0)
+  (major1) == 13 && (major2) <  3 || \
+  (major1) == 13 && (major2) == 3 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_gcc */
 /* tool ghc-9.8.2 */
 #ifndef TOOL_VERSION_ghc
@@ -121,15 +121,15 @@
   (major1) == 9 && (major2) <  8 || \
   (major1) == 9 && (major2) == 8 && (minor) <= 2)
 #endif /* MIN_TOOL_VERSION_runghc */
-/* tool strip-2.41 */
+/* tool strip-2.43 */
 #ifndef TOOL_VERSION_strip
-#define TOOL_VERSION_strip "2.41"
+#define TOOL_VERSION_strip "2.43"
 #endif /* TOOL_VERSION_strip */
 #ifndef MIN_TOOL_VERSION_strip
 #define MIN_TOOL_VERSION_strip(major1,major2,minor) (\
   (major1) <  2 || \
-  (major1) == 2 && (major2) <  41 || \
-  (major1) == 2 && (major2) == 41 && (minor) <= 0)
+  (major1) == 2 && (major2) <  43 || \
+  (major1) == 2 && (major2) == 43 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_strip */
 
 #ifndef CURRENT_PACKAGE_KEY
