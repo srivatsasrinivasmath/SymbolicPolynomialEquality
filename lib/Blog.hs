@@ -1,6 +1,6 @@
 module Blog where
 
-import Control.Monad (forM_, join)
+import Control.Monad (forM_, join, void)
 import qualified Data.List.NonEmpty as N
 import Data.Maybe (catMaybes, isJust)
 import Data.SBV
@@ -142,27 +142,19 @@ pScalarMult lambda (p_body, p_ctx) = ((\(x, y) -> (lambda * x, y)) <$> p_body, p
 
 isSuccess :: Leaf -> Bool
 isSuccess (Success _) = True
-isSuccess (Fail) = False
+isSuccess Fail = False
 
-mkTest1 :: Symbolic (Either () SMTModel)
-mkTest1 = do
-  qs <- sIntegers ((\x -> "o" ++ show x) <$> [0 .. 5])
-  (q'_body, q'_ctx) <- mkSymPoly "k" qs
-  (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
-  let m = snd (p'_body !! 1)
-  let n = snd (p'_body !! 2)
-  let q = (q'_body, ((\x -> ((fst x) .== 1) .|| ((fst x) .== -1)) <$> q'_body) ++ [snd (q'_body !! 5) .== n] ++ q'_ctx)
-  let p = (p'_body, [n .> 2 * m, 2 * n ./= 7 * m] ++ p'_ctx)
-  let ls = mkZeroForest (pAdd (p `pMult` pCross p) (pScalarMult (-1) (q `pMult` pCross q)))
-  let qu = do
+checkZeroSat :: SymPoly -> Symbolic ()
+checkZeroSat p =
+  let ls = mkZeroForest p
+   in query $ do
         ls' <- ls
-        let res_ls = ((T.findLeaf isSuccess) <$> ls')
+        let res_ls = T.findLeaf isSuccess <$> ls'
         res0 <- T.findM (pure . isJust) res_ls
         let res1 = join res0
         let res2 = case res1 of
               Nothing -> do
-                msg <- io (print "Failure")
-                pure $ Left msg
+                io (print "Failure")
               Just lf -> case lf of
                 Success ctx -> do
                   push 1
@@ -170,6 +162,72 @@ mkTest1 = do
                   cs <- checkSat
                   mdl <- getModel
                   pop 1
-                  pure $ Right mdl
-        res2
-  query qu
+                  io $ print mdl
+        void res2
+
+rMinusWithConstraint :: Symbolic SymPoly
+rMinusWithConstraint = do
+  qs <- sIntegers ((\x -> "a" ++ show x) <$> [0 .. 5])
+  (q'_body, q'_ctx) <- mkSymPoly "k" qs
+  (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
+  let m = snd (p'_body !! 1)
+  let n = snd (p'_body !! 2)
+  let q = (q'_body, ((\x -> ((fst x) .== 1) .|| ((fst x) .== -1)) <$> q'_body) ++ [snd (q'_body !! 5) .== n] ++ q'_ctx)
+  let p = (p'_body, [n .> 2 * m, 2 * n ./= 7 * m] ++ p'_ctx)
+  pure (pAdd (p `pMult` pCross p) (pScalarMult (-1) (q `pMult` pCross q)))
+
+rMinus :: Symbolic SymPoly
+rMinus = do
+  qs <- sIntegers ((\x -> "a" ++ show x) <$> [0 .. 5])
+  (q'_body, q'_ctx) <- mkSymPoly "k" qs
+  (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
+  let m = snd (p'_body !! 1)
+  let n = snd (p'_body !! 2)
+  let q = (q'_body, ((\x -> ((fst x) .== 1) .|| ((fst x) .== -1)) <$> q'_body) ++ [snd (q'_body !! 5) .== n] ++ q'_ctx)
+  let p = (p'_body, [n .> 2 * m] ++ p'_ctx)
+  pure (pAdd (p `pMult` pCross p) (pScalarMult (-1) (q `pMult` pCross q)))
+
+rPlus :: Symbolic SymPoly
+rPlus = do
+  qs <- sIntegers ((\x -> "a" ++ show x) <$> [0 .. 5])
+  (q'_body, q'_ctx) <- mkSymPoly "k" qs
+  (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
+  let m = snd (p'_body !! 1)
+  let n = snd (p'_body !! 2)
+  let q = (q'_body, ((\x -> ((fst x) .== 1) .|| ((fst x) .== -1)) <$> q'_body) ++ [snd (q'_body !! 5) .== n] ++ q'_ctx)
+  let p = (p'_body, [n .> 2 * m, 2 * n ./= 7 * m] ++ p'_ctx)
+  pure (pAdd (p `pMult` pCross p) (q `pMult` pCross q))
+
+distinctAlpha :: Symbolic SymPoly
+distinctAlpha = do
+  [a_1, b_1, a_2, b_2, k_1, k_2] <- sIntegers (["a_1", "b_1", "a_2", "b_2", "k_1", "k_2"])
+  let p_1 = ([(1, a_1 * k_1), (-2, b_1 * k_1), (1, 0)], [a_1 .> b_1, b_1 .> 0, k_1 .> 0]) :: SymPoly
+  let p_2 = ([(1, a_2 * k_2), (-2, b_2 * k_2), (1, 0)], [a_2 .> b_2, b_2 .> 0, k_2 .> 0]) :: SymPoly
+  let q_1 = ([(1, k_1), (-1, 0)], []) :: SymPoly
+  let q_2 = ([(1, k_2), (-1, 0)], [k_2 ./= k_1]) :: SymPoly
+  pure $ (pAdd (pMult q_2 p_1) (pScalarMult (-1) (pMult q_1 p_2)))
+
+distinctBeta :: Symbolic SymPoly
+distinctBeta = do
+  [a_1, b_1, a_2, b_2, k_1, k_2] <- sIntegers (["a_1", "b_1", "a_2", "b_2", "k_1", "k_2"])
+  let p_1 = ([(-2, a_1 * k_1), (1, b_1 * k_1), (1, 0)], [a_1 .> b_1, b_1 .> 0, k_1 .> 0]) :: SymPoly
+  let p_2 = ([(-2, a_2 * k_2), (1, b_2 * k_2), (1, 0)], [a_2 .> b_2, b_2 .> 0, k_2 .> 0]) :: SymPoly
+  let q_1 = ([(1, k_1), (-1, 0)], []) :: SymPoly
+  let q_2 = ([(1, k_2), (-1, 0)], [k_2 ./= k_1]) :: SymPoly
+  pure $ (pAdd (pMult q_2 p_1) (pScalarMult (-1) (pMult q_1 p_2)))
+
+distinctAlphaMuK :: Symbolic SymPoly
+distinctAlphaMuK = do
+  [a_1, b_1, k_1, k_2] <- sIntegers (["a_1", "b_1", "k_1", "k_2"])
+  let p_1 = ([(1, a_1 * k_1), (-2, b_1 * k_1), (1, 0)], [a_1 .> b_1, b_1 .> 0, k_1 .> 0]) :: SymPoly
+  let q_1 = ([(1, k_1), (-1, 0)], []) :: SymPoly
+  let mu = ([(1, 3 * k_2), (1, k_2), (1, 0)], [k_2 .> 0]) :: SymPoly
+  pure $ pAdd p_1 (pScalarMult (-1) (pMult mu q_1))
+
+distinctAlphaNuK :: Symbolic SymPoly
+distinctAlphaNuK = do
+  [a_1, b_1, k_1, k_2] <- sIntegers (["a_1", "b_1", "k_1", "k_2"])
+  let p_1 = ([(1, a_1 * k_1), (-2, b_1 * k_1), (1, 0)], [a_1 .> b_1, b_1 .> 0, k_1 .> 0]) :: SymPoly
+  let q_1 = ([(1, k_1), (-1, 0)], []) :: SymPoly
+  let mu = ([(1, 3 * k_2), (1, 2 * k_2), (-1, 0)], [k_2 .> 0]) :: SymPoly
+  pure $ pAdd p_1 (pScalarMult (-1) (pMult mu q_1))
