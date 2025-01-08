@@ -30,18 +30,17 @@ ana phi seed = MSearchTree step
 findLeaf :: (Monad m) => (b -> Bool) -> MSearchTree m a b -> m (Maybe b)
 findLeaf p (MSearchTree t) = do
   node <- t
-  let x = case node of
-        Leaf l ->
-          pure $
-            if p l
-              then Just l
-              else Nothing
-        Node {children = c} ->
-          let phi = toList (findLeaf p <$> c)
-           in do
-                res <- findM (pure . isJust) phi
-                pure (join res)
-  x
+  case node of
+    Leaf l ->
+      pure $
+        if p l
+          then Just l
+          else Nothing
+    Node {children = c} ->
+      let phi = toList (findLeaf p <$> c)
+       in do
+            res <- findM (pure . isJust) phi
+            pure (join res)
 
 toTree :: (Monad m) => MSearchTree m a b -> m (Tree (Either b a))
 toTree = unfoldTreeM go
