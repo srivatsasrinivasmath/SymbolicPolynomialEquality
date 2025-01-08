@@ -165,8 +165,8 @@ checkZeroSat p =
                   io $ print mdl
         void res2
 
-rMinusWithConstraint :: Symbolic SymPoly
-rMinusWithConstraint = do
+rWithConstraint :: Symbolic SymPoly
+rWithConstraint = do
   qs <- sIntegers ((\x -> "a" ++ show x) <$> [0 .. 5])
   (q'_body, q'_ctx) <- mkSymPoly "k" qs
   (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
@@ -176,8 +176,8 @@ rMinusWithConstraint = do
   let p = (p'_body, [n .> 2 * m, 2 * n ./= 7 * m] ++ p'_ctx)
   pure (pAdd (p `pMult` pCross p) (pScalarMult (-1) (q `pMult` pCross q)))
 
-rMinus :: Symbolic SymPoly
-rMinus = do
+r :: Symbolic SymPoly
+r = do
   qs <- sIntegers ((\x -> "a" ++ show x) <$> [0 .. 5])
   (q'_body, q'_ctx) <- mkSymPoly "k" qs
   (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
@@ -186,17 +186,6 @@ rMinus = do
   let q = (q'_body, ((\x -> ((fst x) .== 1) .|| ((fst x) .== -1)) <$> q'_body) ++ [snd (q'_body !! 5) .== n] ++ q'_ctx)
   let p = (p'_body, [n .> 2 * m] ++ p'_ctx)
   pure (pAdd (p `pMult` pCross p) (pScalarMult (-1) (q `pMult` pCross q)))
-
-rPlus :: Symbolic SymPoly
-rPlus = do
-  qs <- sIntegers ((\x -> "a" ++ show x) <$> [0 .. 5])
-  (q'_body, q'_ctx) <- mkSymPoly "k" qs
-  (p'_body, p'_ctx) <- mkSymPoly "p" [1, -2, 1]
-  let m = snd (p'_body !! 1)
-  let n = snd (p'_body !! 2)
-  let q = (q'_body, ((\x -> ((fst x) .== 1) .|| ((fst x) .== -1)) <$> q'_body) ++ [snd (q'_body !! 5) .== n] ++ q'_ctx)
-  let p = (p'_body, [n .> 2 * m, 2 * n ./= 7 * m] ++ p'_ctx)
-  pure (pAdd (p `pMult` pCross p) (q `pMult` pCross q))
 
 distinctAlpha :: Symbolic SymPoly
 distinctAlpha = do
