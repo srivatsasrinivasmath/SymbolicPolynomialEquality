@@ -150,7 +150,7 @@ checkZeroSat p =
    in query $ do
         ls' <- ls
         let res_ls = T.findLeaf isSuccess <$> ls'
-        res0 <- T.findM (pure . isJust) res_ls
+        res0 <- U.findM (pure . isJust) res_ls
         let res1 = join res0
         let res2 = case res1 of
               Nothing -> do

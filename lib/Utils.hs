@@ -6,6 +6,13 @@ import Data.List as L
 import Data.SBV
 import Data.SBV.Control
 
+findM :: (Monad m) => (a -> m Bool) -> [m a] -> m (Maybe a)
+findM _ [] = pure Nothing
+findM p (c : cs) = do
+  out <- c
+  res <- p out
+  if res then pure $ Just out else findM p cs
+
 proveOp :: [SBool] -> (a -> a -> SBool) -> a -> a -> Query Bool
 proveOp ls op x y =
   do
